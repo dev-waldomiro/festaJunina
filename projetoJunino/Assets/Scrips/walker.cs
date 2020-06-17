@@ -91,6 +91,7 @@ public class walker : MonoBehaviour
 
     bool IsGrounded()
     {
+        groundMask = 1 << 8;
         float extraHeightText = 0.1f;
         RaycastHit2D hit = Physics2D.Raycast(cc.bounds.center, Vector2.down, cc.bounds.extents.y + extraHeightText, groundMask);
         //origem, direção, extensão, o que vai pegar
