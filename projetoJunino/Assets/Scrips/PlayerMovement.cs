@@ -1,41 +1,40 @@
-﻿﻿using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class walker : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-	public float movingSpeed; //velocidade que seu personagem vai andar
-	
-	//variaveis do pulo
-	[Range(0,100)]
+
+    //variaveis
+    public float movementSpeed = 5f;
+
+    [Range(0,100)]
     public float jumpVariable = 10f; 
-    public float fallVariable = 2.5f;
-    public float lowJumpVariable = 2f;
-	public float timeElapsedByPress = 0f;
-	public float jumpTimeThreshhold = 0.085f;
+    private float fallVariable = 2.5f;
+    private  float lowJumpVariable = 2f;
+	private  float timeElapsedByPress = 0f;
+	private  float jumpTimeThreshhold = 0.085f;
 
-	private bool isFacingRight = true;
+    private bool isFacingRight = true;
 
-	//objetos (GameObjects ou Components)
-	public GameObject player; //objeto do seu personagem
-	public BoxCollider2D cc; //pegar o box collidar do seu objeto
-	private Rigidbody2D rb;
-	public LayerMask groundMask;
+    //referencia de classes
+    private GameObject player;
+    private Rigidbody2D rb;
+	private BoxCollider2D bc;
+    public LayerMask groundMask;
 
-	void Awake()
-	{
-		 cc = GetComponent<BoxCollider2D>();
-		 rb = GetComponent<Rigidbody2D>();
-	}
-
-    void Start()
+    // Awake is called when the script instance is being loaded.
+    void Awake()
     {
-        movingSpeed = 3f; //criando automaticamente uma velocidade pro seu personagem
+        player = GameObject.Find("Player");;
+        bc = GetComponent<BoxCollider2D>();
+		rb = GetComponent<Rigidbody2D>();
     }
 
+    // Update is called once per frame
     void Update()
     {
-        
+
         if(Input.GetAxis("Horizontal") != 0f) //verifica se o jogador está se movimentando
         {
         	if(Input.GetAxis("Horizontal") > 0f && !isFacingRight && IsGrounded())
@@ -45,8 +44,7 @@ public class walker : MonoBehaviour
             {
                 Flip();
             }
-            player.transform.Translate(Input.GetAxis("Horizontal")*movingSpeed*Time.deltaTime, 0, 0);
-            //muda o transform do personagem de posição
+            player.transform.Translate(Input.GetAxis("Horizontal")*movementSpeed*Time.deltaTime, 0, 0);
         } 
 
         if(Input.GetKey(KeyCode.Space))
@@ -72,16 +70,16 @@ public class walker : MonoBehaviour
         	}
     	}
 
-    	if(rb.velocity.y < 0)
+        if(rb.velocity.y < 0)
     	{
             rb.velocity += Vector2.up * Physics2D.gravity.y * (fallVariable - 1) * Time.deltaTime;
         } else if (rb.velocity.y > 0  && !Input.GetKeyDown(KeyCode.Space))
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpVariable - 1) * Time.deltaTime;
         }
-	}
+    }
 
-	void Flip()
+    void Flip()
 	{
         isFacingRight = !isFacingRight;
         Vector3 theScale = this.gameObject.transform.localScale;
@@ -92,8 +90,8 @@ public class walker : MonoBehaviour
     bool IsGrounded()
     {
         float extraHeightText = 0.1f;
-        RaycastHit2D hit = Physics2D.Raycast(cc.bounds.center, Vector2.down, cc.bounds.extents.y + extraHeightText, groundMask);
-        //origem, direção, extensão, o que vai pegar
+        RaycastHit2D hit = Physics2D.Raycast(bc.bounds.center, Vector2.down, bc.bounds.extents.y + extraHeightText, groundMask);
         return hit.collider != null;
     }
+    
 }
